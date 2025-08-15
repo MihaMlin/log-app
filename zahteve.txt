@@ -1,0 +1,41 @@
+- prijava in auth flow že prej implementiran (JWT access/refresh in store v db)
+- user pravice ["user", "admin"]
+- daj vstran register saj lahko samo admin registrira novega userja
+
+
+Admin Dashboard
+  Projects Overview: vidi vse projekte, ownerje in število critical logov.
+  Team: CRUD uporabnikov, “Set password” email ob kreaciji.
+
+Admin Dashboard (/admin)
+│
+├─ Projects Overview (/admin/projects)
+│   ├─ Tabela projektov (Ime, Owner, Št. Critical Logov, Zadnja aktivnost)
+│   ├─ Možnost filtracije/sortiranja
+│   └─ Klik na vrstico → Project Details
+│       ├─ Podrobna statistika (grafikon resnosti, timeline aktivnosti)
+│       └─ Export vseh logov (JSON/CSV)
+│
+└─ Team Management (/admin/team)
+    ├─ User List (Email, Role, Status, Last Login)
+    ├─ [+ Add User] forma (samo email + role)
+    │   └─ Avtomatski "Set Password" email (JWT token, 24h veljavnost)
+    ├─ User Actions (Edit Role, Resend Invite, Deactivate)
+    └─ Bulk Operations (CSV Import/Export)
+
+
+User Dashboard
+  Projects Overview: vidi samo svoje projekte, lahko izvoz CSV, statistika logov.
+
+User Dashboard (/dashboard)
+│
+└─ My Projects (/dashboard/projects)
+    ├─ Project Cards (Ime, Št. Novih Logov, Status)
+    └─ Project Detail (/dashboard/projects/[id])
+        ├─ Live Log Stream
+        ├─ Advanced Filters (čas, resnost, iskanje po vsebini)
+        ├─ Export Options (CSV/Excel za izbrane filtre)
+        └─ Mini Dashboard s statistikami:
+            ├─ Current Status (up/down)
+            ├─ 1h/24h Log Count
+            └─ Severity Distribution (Doughnut Chart)

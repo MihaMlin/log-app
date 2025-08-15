@@ -1,0 +1,99 @@
+"use client";
+
+import * as React from "react";
+import { BookOpen, Frame, Map, PieChart, SquareTerminal } from "lucide-react";
+
+import { NavMain } from "@/app/(main)/dashboard/_components/nav-main";
+import { NavAdmin } from "@/app/(main)/dashboard/_components/nav-admin";
+import { NavUser } from "@/app/(main)/dashboard/_components/nav-user";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { NavHeader } from "./nav-header";
+
+// This is sample data.
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    {
+      title: "MyProjects",
+      url: "#",
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: "Project1",
+          url: "#",
+        },
+        {
+          title: "Project2",
+          url: "#",
+        },
+        {
+          title: "Project3",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "MyLogs",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "1h",
+          url: "#",
+        },
+        {
+          title: "24h",
+          url: "#",
+        },
+        {
+          title: "Severity",
+          url: "#",
+        },
+      ],
+    },
+  ],
+  actions: [
+    {
+      name: "All Projects",
+      url: "#",
+      icon: Map,
+    },
+    {
+      name: "Manage Users",
+      url: "/dashboard/manage-users",
+      icon: Frame,
+    },
+  ],
+};
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <NavHeader />
+      </SidebarHeader>
+      <SidebarContent>
+        {/* Main Navigation */}
+        <NavMain items={data.navMain} />
+
+        {/* Admin Navigation */}
+        <NavAdmin actions={data.actions} />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
+}
