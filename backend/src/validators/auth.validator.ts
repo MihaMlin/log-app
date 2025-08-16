@@ -12,6 +12,11 @@ export const loginSchema = z.object({
   userAgent: z.string().optional(),
 });
 
+export const registerSchema = z.object({
+  email: emailSchema,
+  role: z.enum(["user", "admin"]),
+});
+
 export const setInitialPasswordSchema = z
   .object({
     password: passwordSchema,

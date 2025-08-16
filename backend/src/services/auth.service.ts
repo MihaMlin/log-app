@@ -23,13 +23,17 @@ import { sendMail } from "../mailers/sendMail";
 import { getPasswordResetTemplate } from "../mailers/templates/passwordReset.template";
 import { getPasswordInitialSetTemplate } from "../mailers/templates/passwordInitialSet.template";
 
-export const createAccount = async (email: string) => {
+type CreateAccountParams = {
+  email: string;
+  role: "user" | "admin";
+};
+export const createAccount = async ({ email, role }: CreateAccountParams) => {
   // verify email is not taken
   const existingUser = await UserModel.exists({ email });
 
   appAssert(!existingUser, HTTPSTATUS.CONFLICT, "Email already in use");
 
-  const user = await UserModel.create({ email });
+  const user = await UserModel.create({ email, role });
 
   const verificationCode = await VerificationCodeModel.create({
     userId: user._id,

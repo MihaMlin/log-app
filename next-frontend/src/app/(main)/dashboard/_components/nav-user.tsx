@@ -28,18 +28,26 @@ import {
 import { logoutMutationFn } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { AUTH } from "@/hooks/use-auth";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
+interface NavUserProps {
+  user?: {
     email: string;
-    avatar: string;
+    avatar?: string;
+    role?: "user" | "admin";
+    verified?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
-}) {
+}
+
+export function NavUser({ user }: NavUserProps) {
+  if (!user) return null;
+
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {
@@ -47,7 +55,8 @@ export function NavUser({
       toast.success("Logout Success", {
         description: "You have been logged out successfully",
       });
-      router.push("/auth/sign-in");
+      queryClient.invalidateQueries({ queryKey: [AUTH] });
+      router.push("/sign-in");
     } catch (error) {
       toast.error("Logout Failed", {
         description: "An error occurred while logging out",
@@ -65,12 +74,12 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                {/* <AvatarImage src={user.avatar} alt={user.email} /> */}
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">{user.email}</span>
+                <span className="truncate text-xs">role: {user.role}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -84,35 +93,20 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  {/* <AvatarImage src={user.avatar} alt={user.email} /> */}
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">{user.email}</span>
+                  <span className="truncate text-xs">role: {user.role}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
                 <BadgeCheck />
                 Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

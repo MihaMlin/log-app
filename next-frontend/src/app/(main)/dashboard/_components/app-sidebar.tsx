@@ -14,14 +14,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavHeader } from "./nav-header";
+import { useAuthContext } from "@/context/auth-provider";
 
-// This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "MyProjects",
@@ -78,6 +73,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuthContext();
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -88,10 +85,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
 
         {/* Admin Navigation */}
-        <NavAdmin actions={data.actions} />
+        {user?.role === "admin" && <NavAdmin actions={data.actions} />}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

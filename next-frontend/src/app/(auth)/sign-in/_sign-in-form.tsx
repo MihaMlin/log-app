@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginMutationFn } from "@/lib/api"; // Changed to login function
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,13 +25,14 @@ import {
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { AUTH } from "@/hooks/use-auth";
 
 export function SignInForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const formSchema = z.object({
     email: z.email({
@@ -53,10 +54,11 @@ export function SignInForm({
   const { mutate, isPending } = useMutation({
     mutationFn: loginMutationFn,
     onSuccess: () => {
-      toast.success("SignIn successful", {
+      toast.success("Sign In successful", {
         description: "You have been signed in successfully",
       });
-      router.replace("/home");
+      queryClient.invalidateQueries({ queryKey: [AUTH] });
+      router.replace("/dashboard");
     },
     onError: (error: Error) => {
       toast.error("Error", {

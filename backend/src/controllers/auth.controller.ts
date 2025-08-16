@@ -20,14 +20,15 @@ import asyncHandler from "../middleware/asyncHandler";
 import {
   emailSchema,
   loginSchema,
+  registerSchema,
   resetPasswordSchema,
   setInitialPasswordSchema,
 } from "../validators/auth.validator";
 
 export const registerHandler = asyncHandler(async (req, res) => {
-  const email = emailSchema.parse(req.body.email);
+  const request = registerSchema.parse(req.body);
 
-  const { user } = await createAccount(email);
+  await createAccount(request);
 
   return res.status(HTTPSTATUS.CREATED).json({
     message: "Account created successfully.",

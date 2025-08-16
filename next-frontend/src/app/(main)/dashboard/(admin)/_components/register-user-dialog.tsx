@@ -18,12 +18,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader, MailCheck, Plus } from "lucide-react";
+import { Loader, MailCheck } from "lucide-react";
 import { registerUserMutationFn } from "@/lib/api";
 import {
   Select,
