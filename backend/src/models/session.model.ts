@@ -16,7 +16,10 @@ const sessionSchema = new mongoose.Schema<SessionDocument>({
     required: true,
     index: true,
   },
-  userAgent: { type: String },
+  userAgent: {
+    type: String,
+    required: false,
+  },
   createdAt: {
     type: Date,
     required: true,

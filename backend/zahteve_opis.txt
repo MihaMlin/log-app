@@ -1,0 +1,19 @@
+Potrebujemo aplikacijo za zbiranje in pregled raznoraznih logov.
+
+V aplikacijo se bo možno prijaviti (račune lahko registrira samo administrator).
+Uporabnik lahko doda projekte. Logi se zbirajo v okviru projekta.
+
+Aplikacija je torej sestavljena iz dveh delov: API del in uporabniški vmesnik.
+
+Log zapisi se zbirajo preko API dela (pazi na avtentikacijo in avtorizacijo).
+Log zapisi se shranjujejo v bazo. Vsebina je načeloma nestrukturirana, mora pa vsak zapis vsebovati časovno značko,
+stopnjo resnosti in informacije o izvoru.
+Vsak zapis je vezan na nek projekt.
+
+Na uporabniškem vmesniku naj bo možno iskati po vsebini zapisov, jih sortirati in izvoziti v Excel.
+
+Na uporabniškem vmesniku naj bo tudi osnovna statistika:
+
+- število prejetih zapisov na projektu v zadnjih 24 urah
+- število prejetih zapisov na projektu v zadnji uri
+- število prejetih zapisov na projektu po resnosti

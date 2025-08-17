@@ -8,12 +8,12 @@ import {
   sendPasswordResetHandler,
   resetPasswordHandler,
 } from "../controllers/auth.controller";
-import { authenticateAdmin } from "../middleware/authenticate";
-
+import { authenticate } from "../middleware/authenticate";
+import { authorizeAdmin } from "../middleware/authorize";
 const authRoutes = Router();
 
 // prefix: /auth
-authRoutes.post("/register", authenticateAdmin, registerHandler);
+authRoutes.post("/register", authenticate, authorizeAdmin, registerHandler);
 authRoutes.post("/login", loginHandler);
 authRoutes.get("/logout", logoutHandler);
 authRoutes.get("/refresh", refreshHandler);

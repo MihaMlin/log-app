@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { RequestHandler } from "express";
 import { HTTPSTATUS } from "../constants/http";
 import { AppErrorCode } from "../constants/appErrorCode";
@@ -21,22 +22,10 @@ const authenticate: RequestHandler = (req, res, next) => {
     AppErrorCode.InvalidAccessToken
   );
 
-  req.userId = payload.userId;
-  req.sessionId = payload.sessionId;
-  req.role = payload.role;
+  req.userId = new mongoose.Types.ObjectId(payload.userId);
+  req.sessionId = new mongoose.Types.ObjectId(payload.sessionId);
+  req.isAdmin = payload.role === "admin";
   next();
 };
 
-const authenticateAdmin: RequestHandler = (req, res, next) => {
-  authenticate(req, res, () => {
-    appAssert(
-      req.role === "admin",
-      HTTPSTATUS.FORBIDDEN,
-      "Admin access required",
-      AppErrorCode.Forbidden
-    );
-    next();
-  });
-};
-
-export { authenticate, authenticateAdmin };
+export { authenticate };

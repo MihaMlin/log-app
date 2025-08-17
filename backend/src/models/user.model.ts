@@ -16,10 +16,25 @@ export interface UserDocument
 
 const userSchema = new mongoose.Schema<UserDocument>(
   {
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: false },
-    role: { type: String, required: true, default: UserRoleType.User },
-    verified: { type: Boolean, required: true, default: false },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: false,
+    },
+    role: {
+      type: String,
+      required: true,
+      default: UserRoleType.User,
+    },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   {
     timestamps: true,

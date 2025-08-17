@@ -36,7 +36,7 @@ export default async function middleware(req: NextRequest) {
   // 4. if refresh token is invalid, we will redirect to /sign-in (API interceptor handles this)
 
   if (isPublicRoute && accessToken) {
-    return NextResponse.rewrite(new URL("/dashboard", req.nextUrl));
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 
   return NextResponse.next();

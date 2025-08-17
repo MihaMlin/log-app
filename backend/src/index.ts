@@ -12,6 +12,8 @@ import notFoundHandler from "./middleware/notFoundHandler";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import sessionRoutes from "./routes/session.route";
+import projectRoutes from "./routes/project.route";
+import logRoutes from "./routes/log.route";
 
 const app = express();
 const BASE_PATH = Env.BASE_PATH;
@@ -41,6 +43,8 @@ app.use(`${BASE_PATH}/auth`, authRoutes);
 // protected routes
 app.use(`${BASE_PATH}/users`, authenticate, userRoutes);
 app.use(`${BASE_PATH}/sessions`, authenticate, sessionRoutes);
+app.use(`${BASE_PATH}/projects`, authenticate, projectRoutes);
+app.use(`${BASE_PATH}/logs`, authenticate, logRoutes);
 
 // 404 handler
 app.use(notFoundHandler());
