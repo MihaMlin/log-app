@@ -1,23 +1,38 @@
+// app/projects/[id]/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Tag, RefreshCcw, Edit } from "lucide-react";
+import { Calendar, Clock, Tag, RefreshCcw } from "lucide-react";
 import { format } from "date-fns";
 import useProject from "@/hooks/use-project";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
 import EditProjectDialog from "../_components/edit-project-dialog";
+import { DataTable } from "./_componets/data-table";
+import { columns } from "./_componets/columns";
+import useLogs from "@/hooks/use-logs";
 import { useState } from "react";
 
 const ProjectDetailPage = () => {
   const [isEditProjectDialogOpen, setIsEditProjectDialogOpen] = useState(false);
 
   const { id } = useParams();
-  const { project, isLoading, isError, refetch } = useProject(id as string);
+  const {
+    project,
+    isLoading: isLoadingProject,
+    isError: isProjectError,
+    refetch: refetchProject,
+  } = useProject(id as string);
 
-  if (isError) {
+  const {
+    logs,
+    isLoading: isLoadingLogs,
+    isError: isLogsError,
+    refetch: refetchLogs,
+  } = useLogs(id as string);
+
+  if (isProjectError) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center h-64">
@@ -29,7 +44,7 @@ const ProjectDetailPage = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoadingProject) {
     return (
       <div className="container mx-auto px-4 py-8 space-y-6">
         <Skeleton className="h-8 w-1/2" />
@@ -50,6 +65,11 @@ const ProjectDetailPage = () => {
       </div>
     );
   }
+
+  const handleProjectEdited = () => {
+    refetchProject();
+    refetchLogs(); // Optionally refresh logs too if needed
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -130,17 +150,41 @@ const ProjectDetailPage = () => {
               </p>
             </div>
           </div>
-
-          {/* Additional sections can be added here */}
-
-          {/* Tasks, Team Members, Timeline, etc. */}
         </div>
       </div>
+
+      {/* Logs Data Table Section */}
+      <div className="py-10">
+        <h2 className="text-2xl font-semibold mb-4">Logs</h2>
+        {isLogsError ? (
+          <div className="rounded-md border p-4 bg-destructive/10 text-destructive">
+            <p>Error loading logs</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-2"
+              onClick={() => refetchLogs()}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : isLoadingLogs ? (
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ) : (
+          <DataTable columns={columns} data={logs} />
+        )}
+      </div>
+
+      {/* Edit Project Dialog */}
       <EditProjectDialog
         open={isEditProjectDialogOpen}
         onOpenChange={setIsEditProjectDialogOpen}
         project={project}
-        onProjectEdited={refetch}
+        onProjectEdited={handleProjectEdited}
       />
     </div>
   );
