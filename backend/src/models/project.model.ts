@@ -5,6 +5,8 @@ export interface ProjectDocument
   userId: mongoose.Types.ObjectId;
   name: string;
   description?: string;
+  status: "active" | "archived" | "completed";
+  tags?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +21,17 @@ const projectSchema = new mongoose.Schema<ProjectDocument>(
     },
     name: { type: String, required: true },
     description: { type: String, required: false },
+    status: {
+      type: String,
+      enum: ["active", "archived", "completed"],
+      required: true,
+      default: "active",
+    },
+    tags: {
+      type: [String],
+      required: false,
+      default: [],
+    },
   },
   {
     timestamps: true,

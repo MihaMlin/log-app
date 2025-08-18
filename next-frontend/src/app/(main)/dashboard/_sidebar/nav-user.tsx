@@ -6,7 +6,9 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Moon,
   Sparkles,
+  Sun,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,11 +27,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { logoutMutationFn } from "@/lib/api";
+import { logoutMutationFn } from "@/lib/api/auth.api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { AUTH } from "@/hooks/use-auth";
+import { AUTH_QUERY_KEY } from "@/hooks/use-auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTheme } from "next-themes";
 
 interface NavUserProps {
   user?: {
@@ -45,6 +49,7 @@ interface NavUserProps {
 export function NavUser({ user }: NavUserProps) {
   if (!user) return null;
 
+  const { theme, setTheme } = useTheme();
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -52,10 +57,10 @@ export function NavUser({ user }: NavUserProps) {
   const handleLogout = async () => {
     try {
       await logoutMutationFn();
+      queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY] });
       toast.success("Logout Success", {
         description: "You have been logged out successfully",
       });
-      queryClient.invalidateQueries({ queryKey: [AUTH] });
       router.push("/sign-in");
     } catch (error) {
       toast.error("Logout Failed", {
@@ -63,6 +68,22 @@ export function NavUser({ user }: NavUserProps) {
       });
     }
   };
+
+  if (!user) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-12 w-12 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
 
   return (
     <SidebarMenu>
@@ -108,6 +129,14 @@ export function NavUser({ user }: NavUserProps) {
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
+              {theme && (
+                <DropdownMenuItem
+                  onSelect={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  {theme === "dark" ? <Moon /> : <Sun />}
+                  Toggle Theme
+                </DropdownMenuItem>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={handleLogout}>

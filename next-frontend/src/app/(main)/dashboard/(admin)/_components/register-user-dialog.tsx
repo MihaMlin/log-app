@@ -23,7 +23,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader, MailCheck } from "lucide-react";
-import { registerUserMutationFn } from "@/lib/api";
+import { registerUserMutationFn } from "@/lib/api/auth.api";
 import {
   Select,
   SelectContent,

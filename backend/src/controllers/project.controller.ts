@@ -32,7 +32,9 @@ export const getProjectByIdHandler = asyncHandler(async (req, res) => {
 });
 
 export const createProjectHandler = asyncHandler(async (req, res) => {
-  const { name, description } = createProjectSchema.parse(req.body);
+  const { name, description, status, tags } = createProjectSchema.parse(
+    req.body
+  );
 
   const existingProject = await ProjectModel.findOne({
     userId: req.userId,
@@ -49,6 +51,8 @@ export const createProjectHandler = asyncHandler(async (req, res) => {
     userId: req.userId,
     name,
     description,
+    status,
+    tags,
   });
 
   appAssert(
@@ -61,14 +65,26 @@ export const createProjectHandler = asyncHandler(async (req, res) => {
 });
 
 export const updateProjectHandler = asyncHandler(async (req, res) => {
-  const { projectId, name, description } = updateProjectSchema.parse({
-    projectId: req.params.id,
-    ...req.body,
+  const { projectId, name, description, status, tags } =
+    updateProjectSchema.parse({
+      projectId: req.params.id,
+      ...req.body,
+    });
+
+  const existingProject = await ProjectModel.findOne({
+    userId: req.userId,
+    name,
   });
+
+  appAssert(
+    !existingProject,
+    HTTPSTATUS.CONFLICT,
+    "Project with this name already exists"
+  );
 
   const project = await ProjectModel.findByIdAndUpdate(
     projectId,
-    { name, description },
+    { name, description, status, tags },
     { new: true }
   );
 

@@ -24,7 +24,7 @@ logRoutes.get(
   getProjectStatsHandler
 );
 logRoutes.get("/:id", authorizeLogAccess, getLogByIdHandler);
-logRoutes.delete("/:id", authorizeLogAccess, deleteLogHandler);
 logRoutes.post("/project/:projectId", authorizeLogAccess, createLogHandler);
+logRoutes.delete("/:id", authorizeLogAccess, deleteLogHandler);
 
 export default logRoutes;

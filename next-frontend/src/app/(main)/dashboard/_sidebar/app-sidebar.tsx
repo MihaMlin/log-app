@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { BookOpen, Frame, Map, PieChart, SquareTerminal } from "lucide-react";
+import { FolderOpenDot, Logs, Map, Users } from "lucide-react";
 
-import { NavMain } from "@/app/(main)/dashboard/_components/nav-main";
-import { NavAdmin } from "@/app/(main)/dashboard/_components/nav-admin";
-import { NavUser } from "@/app/(main)/dashboard/_components/nav-user";
+import { NavMain } from "@/app/(main)/dashboard/_sidebar/nav-main";
+import { NavAdmin } from "@/app/(main)/dashboard/_sidebar/nav-admin";
+import { NavUser } from "@/app/(main)/dashboard/_sidebar/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -20,28 +20,15 @@ const data = {
   navMain: [
     {
       title: "MyProjects",
-      url: "#",
-      icon: SquareTerminal,
+      url: "/dashboard/projects",
+      icon: FolderOpenDot,
       isActive: true,
-      items: [
-        {
-          title: "Project1",
-          url: "#",
-        },
-        {
-          title: "Project2",
-          url: "#",
-        },
-        {
-          title: "Project3",
-          url: "#",
-        },
-      ],
+      items: [],
     },
     {
       title: "MyLogs",
       url: "#",
-      icon: BookOpen,
+      icon: Logs,
       items: [
         {
           title: "1h",
@@ -67,7 +54,7 @@ const data = {
     {
       name: "Manage Users",
       url: "/dashboard/manage-users",
-      icon: Frame,
+      icon: Users,
     },
   ],
 };

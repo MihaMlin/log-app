@@ -3,7 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { loginMutationFn } from "@/lib/api"; // Changed to login function
+import { loginMutationFn } from "@/lib/api/auth.api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,7 @@ import {
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { AUTH } from "@/hooks/use-auth";
+import { AUTH_QUERY_KEY } from "@/hooks/use-auth";
 
 export function SignInForm({
   className,
@@ -57,7 +57,7 @@ export function SignInForm({
       toast.success("Sign In successful", {
         description: "You have been signed in successfully",
       });
-      queryClient.invalidateQueries({ queryKey: [AUTH] });
+      queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY] });
       router.replace("/dashboard");
     },
     onError: (error: Error) => {

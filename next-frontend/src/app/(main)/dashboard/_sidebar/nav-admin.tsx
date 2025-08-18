@@ -1,3 +1,5 @@
+"use client";
+
 import { Plus, type LucideIcon } from "lucide-react";
 
 import {

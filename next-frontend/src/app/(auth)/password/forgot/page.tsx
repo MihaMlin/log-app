@@ -23,7 +23,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader, MailCheck } from "lucide-react";
 import Link from "next/link";
-import { forgotPasswordMutationFn } from "@/lib/api";
+import { forgotPasswordMutationFn } from "@/lib/api/auth.api";
 
 export default function Page() {
   const formSchema = z.object({

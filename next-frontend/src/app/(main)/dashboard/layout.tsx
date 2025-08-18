@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/app/(main)/dashboard/_components/app-sidebar";
+import { AppSidebar } from "@/app/(main)/dashboard/_sidebar/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,8 +13,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AuthProvider } from "@/context/auth-provider";
 import { AuthGate } from "./_components/auth-gate";
+import { AuthProvider } from "@/context/auth-provider";
+import Breadcrumbs from "./_components/breadcrumbs";
 
 export default function DashboardLayout({
   children,
@@ -35,19 +36,7 @@ export default function DashboardLayout({
                   orientation="vertical"
                   className="mr-2 data-[orientation=vertical]:h-4"
                 />
-                <Breadcrumb>
-                  <BreadcrumbList>
-                    <BreadcrumbItem className="hidden md:block">
-                      <BreadcrumbLink href="#">
-                        Building Your Application
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator className="hidden md:block" />
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
+                <Breadcrumbs />
               </div>
             </header>
 

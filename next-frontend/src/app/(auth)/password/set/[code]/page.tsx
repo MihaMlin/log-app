@@ -17,24 +17,11 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
-import { setInitialPasswordMutationFn } from "@/lib/api";
+import { setInitialPasswordMutationFn } from "@/lib/api/auth.api";
 
 export default function Page() {
   const router = useRouter();
   const { code } = useParams();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: setInitialPasswordMutationFn,
-    onSuccess: () => {
-      toast.success("Password set successfully");
-      router.push("/dashboard");
-    },
-    onError: (error) => {
-      toast.error("Failed to set password", {
-        description: error.message || "Please try again later",
-      });
-    },
-  });
 
   const formSchema = z
     .object({
@@ -58,13 +45,28 @@ export default function Page() {
     },
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: setInitialPasswordMutationFn,
+    onSuccess: () => {
+      toast.success("Password set successfully");
+      router.push("/dashboard");
+    },
+    onError: (error) => {
+      toast.error("Failed to set password", {
+        description: error.message || "Please try again later",
+      });
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (!code) return;
+    const verificationCode = Array.isArray(code) ? code[0] : code;
+
     const data = {
       password: values.password,
       confirmPassword: values.confirmPassword,
-      verificationCode: Array.isArray(code) ? code[0] : code!,
     };
-    mutate(data);
+    mutate({ verificationCode, data });
   };
 
   if (!code) {

@@ -17,25 +17,12 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { resetPasswordMutationFn } from "@/lib/api";
+import { resetPasswordMutationFn } from "@/lib/api/auth.api";
 
 export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: resetPasswordMutationFn,
-    onSuccess: () => {
-      toast.success("Password reset successfully");
-      router.push("/sign-in");
-    },
-    onError: (error) => {
-      toast.error("Password reset failed", {
-        description: error.message || "Please try again later",
-      });
-    },
-  });
 
   const formSchema = z
     .object({
@@ -56,6 +43,19 @@ export default function Page() {
     defaultValues: {
       password: "",
       confirmPassword: "",
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: resetPasswordMutationFn,
+    onSuccess: () => {
+      toast.success("Password reset successfully");
+      router.push("/sign-in");
+    },
+    onError: (error) => {
+      toast.error("Password reset failed", {
+        description: error.message || "Please try again later",
+      });
     },
   });
 

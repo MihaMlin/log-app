@@ -1,8 +1,4 @@
-import API from "./axios-client";
-
-// ==============================
-// Authentication API Functions
-// ==============================
+import API from "../axios-client";
 
 type LoginType = {
   email: string;
@@ -17,7 +13,6 @@ type RegisterType = {
 type SetInitialPasswordType = {
   password: string;
   confirmPassword: string;
-  verificationCode: string;
 };
 
 type ForgotPasswordType = {
@@ -37,11 +32,14 @@ export const registerUserMutationFn = async (data: RegisterType) =>
 
 export const logoutMutationFn = async () => await API.get("/auth/logout");
 
-export const setInitialPasswordMutationFn = async (
-  data: SetInitialPasswordType
-) => {
-  const { verificationCode, ...body } = data;
-  await API.post(`/auth/password/set/${verificationCode}`, body);
+export const setInitialPasswordMutationFn = async ({
+  verificationCode,
+  data,
+}: {
+  verificationCode: string;
+  data: SetInitialPasswordType;
+}) => {
+  await API.post(`/auth/password/set/${verificationCode}`, data);
 };
 
 export const forgotPasswordMutationFn = async (data: ForgotPasswordType) =>
@@ -49,9 +47,3 @@ export const forgotPasswordMutationFn = async (data: ForgotPasswordType) =>
 
 export const resetPasswordMutationFn = async (data: ResetPasswordType) =>
   await API.post(`/auth/password/reset`, data);
-
-// ==============================
-// User API Functions
-// ==============================
-
-export const getUserMutationFn = async () => await API.get("/users/me");
