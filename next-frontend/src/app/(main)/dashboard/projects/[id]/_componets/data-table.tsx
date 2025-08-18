@@ -32,17 +32,27 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  pageSize: number;
+  currentPage: number;
+  pageCount: number;
+  total: number;
+  onPaginationChange: (pageIndex: number, pageSize: number) => void;
+  onSearchChange: (searchValue: string) => void;
   searchColumn?: string;
   searchPlaceholder?: string;
-  pageSize?: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageSize = 10,
+  currentPage = 0,
+  pageCount,
+  total,
+  onPaginationChange,
+  onSearchChange,
   searchColumn = "message",
   searchPlaceholder = "Filter...",
-  pageSize = 3,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -55,11 +65,8 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    initialState: {
-      pagination: {
-        pageSize,
-      },
-    },
+    manualPagination: true,
+    pageCount,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -73,6 +80,10 @@ export function DataTable<TData, TValue>({
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex: currentPage,
+        pageSize,
+      },
     },
   });
 
@@ -86,9 +97,7 @@ export function DataTable<TData, TValue>({
             value={
               (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""
             }
-            onChange={(event) =>
-              table.getColumn(searchColumn)?.setFilterValue(event.target.value)
-            }
+            onChange={(event) => onSearchChange(event.target.value)}
             className="max-w-md w-full"
           />
         </div>
@@ -181,23 +190,23 @@ export function DataTable<TData, TValue>({
       {/* Footer with pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2 w-full">
         <div className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          Showing {currentPage * pageSize + 1} to{" "}
+          {Math.min((currentPage + 1) * pageSize, total)} of {total} entries
         </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => onPaginationChange(currentPage - 1, pageSize)}
+            disabled={currentPage <= 0}
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => onPaginationChange(currentPage + 1, pageSize)}
+            disabled={currentPage >= pageCount - 1}
           >
             Next
           </Button>

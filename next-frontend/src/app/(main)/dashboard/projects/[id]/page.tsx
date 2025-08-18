@@ -1,4 +1,3 @@
-// app/projects/[id]/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
@@ -17,6 +16,11 @@ import { useState } from "react";
 const ProjectDetailPage = () => {
   const [isEditProjectDialogOpen, setIsEditProjectDialogOpen] = useState(false);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
+  const [search, setSearch] = useState("");
+
   const { id } = useParams();
   const {
     project,
@@ -27,10 +31,35 @@ const ProjectDetailPage = () => {
 
   const {
     logs,
+    pagination,
     isLoading: isLoadingLogs,
     isError: isLogsError,
     refetch: refetchLogs,
-  } = useLogs(id as string);
+  } = useLogs({
+    projectId: id as string,
+    params: {
+      currentPage,
+      pageSize,
+      search,
+    },
+  });
+
+  const handleProjectEdited = () => {
+    refetchProject();
+    refetchLogs();
+  };
+
+  // TO-DO fix search
+  const handleSearchChange = (searchValue: string) => {
+    console.log("handleSearchChange called with searchValue:", searchValue);
+    setSearch(searchValue);
+    setCurrentPage(0);
+  };
+
+  const handlePaginationChange = (pageIndex: number, pageSize: number) => {
+    console.log(pageIndex, "pageIndex", pageSize);
+    setCurrentPage(pageIndex);
+  };
 
   if (isProjectError) {
     return (
@@ -65,11 +94,6 @@ const ProjectDetailPage = () => {
       </div>
     );
   }
-
-  const handleProjectEdited = () => {
-    refetchProject();
-    refetchLogs(); // Optionally refresh logs too if needed
-  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -175,7 +199,17 @@ const ProjectDetailPage = () => {
             <Skeleton className="h-10 w-full" />
           </div>
         ) : (
-          <DataTable columns={columns} data={logs} />
+          <DataTable
+            columns={columns}
+            data={logs}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            pageCount={pagination.totalPages}
+            total={pagination.total}
+            onPaginationChange={handlePaginationChange}
+            onSearchChange={handleSearchChange}
+            searchColumn="message"
+          />
         )}
       </div>
 

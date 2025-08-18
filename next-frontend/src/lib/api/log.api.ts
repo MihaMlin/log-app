@@ -15,10 +15,43 @@ type CreateLogType = {
   source: string;
 };
 
+type GetProjectLogsPaginatorParams = {
+  currentPage?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: string;
+  sortDirection?: "asc" | "desc";
+};
+
+type GetProjectLogsPaginatorType = {
+  projectId: string;
+  params?: GetProjectLogsPaginatorParams;
+};
+
 export const getAllLogsMutationFn = async () => await API.get("/logs/");
 
-export const getProjectLogsMutationFn = async (projectId: string) =>
-  await API.get(`/logs/project/${projectId}`);
+export const getProjectLogsMutationFn = async ({
+  projectId,
+  params = {},
+}: GetProjectLogsPaginatorType) => {
+  const {
+    currentPage = 0,
+    pageSize = 10,
+    search = "",
+    sortBy,
+    sortDirection,
+  } = params;
+
+  return await API.get(`/logs/project/${projectId}`, {
+    params: {
+      currentPage,
+      pageSize,
+      ...(search && { search }),
+      ...(sortBy && { sortBy }),
+      ...(sortDirection && { sortDirection }),
+    },
+  });
+};
 
 export const getProjectStatsMutationFn = async (projectId: string) =>
   await API.get(`/logs/project/${projectId}/stats`);
