@@ -20,9 +20,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader, CheckCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { updateProjectMutationFn } from "@/lib/api/project.api";
 import {
   Select,
@@ -65,6 +65,8 @@ const EditProjectDialog = ({
   project,
   onProjectEdited,
 }: EditProjectDialogProps) => {
+  const queryClient = useQueryClient();
+
   const formSchema = z.object({
     name: z.string().min(1, "Required").max(100, "Too long"),
     description: z.string().max(500, "Too long").optional(),
@@ -101,6 +103,7 @@ const EditProjectDialog = ({
         description: "Your project has been successfully updated",
       });
       onProjectEdited?.();
+      queryClient.invalidateQueries({ queryKey: ["user_projects"] });
       onOpenChange(false);
     },
     onError: (error: Error) => {

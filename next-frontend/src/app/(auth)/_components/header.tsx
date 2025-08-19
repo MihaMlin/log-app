@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Menu, Undo2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 type MenuItemType = {
   name: string;
@@ -82,6 +83,7 @@ export const AuthHeader = () => {
                     <span>Back to Home</span>
                   </Link>
                 </Button>
+                <ModeToggle />
               </div>
             </div>
           </div>
