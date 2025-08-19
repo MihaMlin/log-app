@@ -1,41 +1,19 @@
-- prijava in auth flow že prej implementiran (JWT access/refresh in store v db)
-- user pravice ["user", "admin"]
-- daj vstran register saj lahko samo admin registrira novega userja
+Potrebujemo aplikacijo za zbiranje in pregled raznoraznih logov.
 
+V aplikacijo se bo možno prijaviti (račune lahko registrira samo administrator).
+Uporabnik lahko doda projekte. Logi se zbirajo v okviru projekta.
 
-Admin Dashboard
-  Projects Overview: vidi vse projekte, ownerje in število critical logov.
-  Team: CRUD uporabnikov, “Set password” email ob kreaciji.
+Aplikacija je torej sestavljena iz dveh delov: API del in uporabniški vmesnik.
 
-Admin Dashboard (/admin)
-│
-├─ Projects Overview (/admin/projects)
-│   ├─ Tabela projektov (Ime, Owner, Št. Critical Logov, Zadnja aktivnost)
-│   ├─ Možnost filtracije/sortiranja
-│   └─ Klik na vrstico → Project Details
-│       ├─ Podrobna statistika (grafikon resnosti, timeline aktivnosti)
-│       └─ Export vseh logov (JSON/CSV)
-│
-└─ Team Management (/admin/team)
-    ├─ User List (Email, Role, Status, Last Login)
-    ├─ [+ Add User] forma (samo email + role)
-    │   └─ Avtomatski "Set Password" email (JWT token, 24h veljavnost)
-    ├─ User Actions (Edit Role, Resend Invite, Deactivate)
-    └─ Bulk Operations (CSV Import/Export)
+Log zapisi se zbirajo preko API dela (pazi na avtentikacijo in avtorizacijo).
+Log zapisi se shranjujejo v bazo. Vsebina je načeloma nestrukturirana, mora pa vsak zapis vsebovati časovno značko,
+stopnjo resnosti in informacije o izvoru.
+Vsak zapis je vezan na nek projekt.
 
+Na uporabniškem vmesniku naj bo možno iskati po vsebini zapisov, jih sortirati in izvoziti v Excel.
 
-User Dashboard
-  Projects Overview: vidi samo svoje projekte, lahko izvoz CSV, statistika logov.
+Na uporabniškem vmesniku naj bo tudi osnovna statistika:
 
-User Dashboard (/dashboard)
-│
-└─ My Projects (/dashboard/projects)
-    ├─ Project Cards (Ime, Št. Novih Logov, Status)
-    └─ Project Detail (/dashboard/projects/[id])
-        ├─ Live Log Stream
-        ├─ Advanced Filters (čas, resnost, iskanje po vsebini)
-        ├─ Export Options (CSV/Excel za izbrane filtre)
-        └─ Mini Dashboard s statistikami:
-            ├─ Current Status (up/down)
-            ├─ 1h/24h Log Count
-            └─ Severity Distribution (Doughnut Chart)
+- število prejetih zapisov na projektu v zadnjih 24 urah
+- število prejetih zapisov na projektu v zadnji uri
+- število prejetih zapisov na projektu po resnosti

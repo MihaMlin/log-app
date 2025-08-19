@@ -39,7 +39,6 @@ const logSchema = new mongoose.Schema<LogDocument>(
     message: {
       type: String,
       required: true,
-      index: "text", // Enable text search
     },
     severity: {
       type: String,
@@ -63,6 +62,10 @@ const logSchema = new mongoose.Schema<LogDocument>(
   }
 );
 
+// Enable text search
+logSchema.index({ message: "text", source: "text" });
+
+// Method to get project stats
 logSchema.statics.getProjectStats = async function (projectId: string) {
   const last24Hours = oneDayAgo();
   const lastHour = oneHourAge();

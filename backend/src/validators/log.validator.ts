@@ -25,3 +25,18 @@ export const createLogSchema = z.object({
   source: z.string(),
   metadata: z.any().optional(),
 });
+
+export const getProjectLogsQuerySchema = z.object({
+  currentPage: z
+    .string()
+    .transform((val) => parseInt(val))
+    .default(0),
+  pageSize: z
+    .string()
+    .transform((val) => parseInt(val))
+    .default(10),
+  search: z.string().optional().default(""),
+  severity: logSeveritySchema.optional(),
+  sortBy: z.string().optional().default("createdAt"),
+  sortDirection: z.enum(["asc", "desc"]).optional().default("desc"),
+});

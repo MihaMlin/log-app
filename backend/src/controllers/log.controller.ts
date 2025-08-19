@@ -4,6 +4,7 @@ import appAssert from "../utils/appAssert";
 import { HTTPSTATUS } from "../constants/http";
 import {
   createLogSchema,
+  getProjectLogsQuerySchema,
   logIdSchema,
   projectIdSchema,
 } from "../validators/log.validator";
@@ -24,10 +25,44 @@ export const getLogByIdHandler = asyncHandler(async (req, res) => {
 
 export const getProjectLogsHandler = asyncHandler(async (req, res) => {
   const projectId = projectIdSchema.parse(req.params.projectId);
+  const { currentPage, pageSize, search, severity, sortBy, sortDirection } =
+    getProjectLogsQuerySchema.parse(req.query);
 
-  const logs = await LogModel.find({ projectId }).sort({ createdAt: -1 });
+  const query: any = { projectId };
 
-  return res.status(HTTPSTATUS.OK).json(logs);
+  // Add search filter if provided
+  if (search) {
+    query.$text = { $search: search };
+  }
+
+  // Add severity filter if provided
+  if (severity) {
+    query.severity = severity;
+  }
+
+  // Execute queries
+  const [logs, total] = await Promise.all([
+    LogModel.find(query)
+      .sort({ [sortBy]: sortDirection })
+      .skip(currentPage * pageSize)
+      .limit(pageSize),
+    LogModel.countDocuments(query),
+  ]);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(total / pageSize);
+
+  return res.status(HTTPSTATUS.OK).json({
+    logs,
+    pagination: {
+      currentPage,
+      pageSize,
+      total,
+      totalPages,
+      hasNextPage: currentPage < totalPages - 1,
+      hasPreviousPage: currentPage > 0,
+    },
+  });
 });
 
 export const createLogHandler = asyncHandler(async (req, res) => {
