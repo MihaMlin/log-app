@@ -27,7 +27,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,9 +36,9 @@ interface DataTableProps<TData, TValue> {
   pageCount: number;
   total: number;
   onPaginationChange: (pageIndex: number, pageSize: number) => void;
-  onSearchChange: (searchValue: string) => void;
-  searchColumn?: string;
-  searchPlaceholder?: string;
+  availableSeverities?: string[]; // Add this prop
+  selectedSeverity?: string; // Add this prop
+  onSeverityChange?: (severity: string | undefined) => void; // Add this prop
 }
 
 export function DataTable<TData, TValue>({
@@ -50,9 +49,9 @@ export function DataTable<TData, TValue>({
   pageCount,
   total,
   onPaginationChange,
-  onSearchChange,
-  searchColumn = "message",
-  searchPlaceholder = "Filter...",
+  availableSeverities = [],
+  selectedSeverity,
+  onSeverityChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -89,21 +88,33 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4 w-full">
-      {/* Header with search and column visibility */}
-      <div className="flex items-center justify-between gap-4 w-full">
-        <div className="flex-1">
-          <Input
-            placeholder={searchPlaceholder}
-            value={
-              (table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) => onSearchChange(event.target.value)}
-            className="max-w-md w-full"
-          />
+      {/* Header with filters and column visibility */}
+      <div className="flex items-center justify-between w-full">
+        {/* Severity filter buttons (start) */}
+        <div className="flex items-center gap-2">
+          <Button
+            variant={!selectedSeverity ? "default" : "outline"}
+            size="sm"
+            onClick={() => onSeverityChange?.(undefined)}
+          >
+            All
+          </Button>
+          {availableSeverities.map((severity) => (
+            <Button
+              key={severity}
+              variant={selectedSeverity === severity ? "default" : "outline"}
+              size="sm"
+              onClick={() => onSeverityChange?.(severity)}
+            >
+              {severity}
+            </Button>
+          ))}
         </div>
+
+        {/* Column visibility dropdown (end) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="shrink-0">
+            <Button variant="outline" className="shrink-0 w-[100px]">
               Columns
             </Button>
           </DropdownMenuTrigger>
@@ -126,7 +137,10 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Table container with fixed layout */}
-      <div className="rounded-md border w-full overflow-auto">
+      <div
+        className="rounded-md border w-full overflow-auto"
+        style={{ minHeight: "400px" }}
+      >
         <Table className="w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -19,6 +19,7 @@ type GetProjectLogsPaginatorParams = {
   currentPage?: number;
   pageSize?: number;
   search?: string;
+  severity?: string;
   sortBy?: string;
   sortDirection?: "asc" | "desc";
 };
@@ -38,6 +39,7 @@ export const getProjectLogsMutationFn = async ({
     currentPage = 0,
     pageSize = 10,
     search = "",
+    severity,
     sortBy,
     sortDirection,
   } = params;
@@ -47,6 +49,7 @@ export const getProjectLogsMutationFn = async ({
       currentPage,
       pageSize,
       ...(search && { search }),
+      ...(severity && { severity }),
       ...(sortBy && { sortBy }),
       ...(sortDirection && { sortDirection }),
     },

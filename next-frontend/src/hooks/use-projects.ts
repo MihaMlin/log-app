@@ -1,6 +1,7 @@
 "use client";
 
 import { getUserProjectsMutationFn } from "@/lib/api/project.api";
+import { ProjectType } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 
 export const PROJECTS_QUERY_KEY = "user_projects";
@@ -13,7 +14,7 @@ const useProjects = (opts = {}) => {
     ...opts,
   });
 
-  const projects = data?.data || [];
+  const projects = (data?.data as ProjectType[]) || [];
 
   return { projects, isLoading, isError, refetch };
 };

@@ -3,7 +3,14 @@
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Tag, RefreshCcw } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Tag,
+  RefreshCcw,
+  AlertCircle,
+  Activity,
+} from "lucide-react";
 import { format } from "date-fns";
 import useProject from "@/hooks/use-project";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,17 +18,28 @@ import EditProjectDialog from "../_components/edit-project-dialog";
 import { DataTable } from "./_componets/data-table";
 import { columns } from "./_componets/columns";
 import useLogs from "@/hooks/use-logs";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import useProjectStats from "@/hooks/use-project-stats";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatsCard, SeverityBadge } from "./_componets/stats-card";
+import { Input } from "@/components/ui/input";
+import ExportLogsButton from "./_componets/export-button";
 
 const ProjectDetailPage = () => {
   const [isEditProjectDialogOpen, setIsEditProjectDialogOpen] = useState(false);
 
-  // Pagination states
+  // Datatable states
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [selectedSeverity, setSelectedSeverity] = useState<string | undefined>(
+    undefined
+  );
 
   const { id } = useParams();
+
+  // project
   const {
     project,
     isLoading: isLoadingProject,
@@ -29,6 +47,17 @@ const ProjectDetailPage = () => {
     refetch: refetchProject,
   } = useProject(id as string);
 
+  // project log stats
+  const {
+    stats,
+    isLoading: isLoadingProjectStats,
+    isError: isProjectStatsError,
+    refetch: refetchProjectStats,
+  } = useProjectStats(id as string);
+
+  const availableSeverities = Object.keys(stats?.bySeverity || []); // get only available severities
+
+  // project logs
   const {
     logs,
     pagination,
@@ -40,26 +69,42 @@ const ProjectDetailPage = () => {
     params: {
       currentPage,
       pageSize,
-      search,
+      search: debouncedSearch, // use debounce search value
+      severity: selectedSeverity,
     },
   });
 
-  const handleProjectEdited = () => {
+  // --- Helper Functions ---
+  const handleProjectEdited = useCallback(() => {
     refetchProject();
     refetchLogs();
-  };
+    refetchProjectStats();
+  }, [refetchProject, refetchLogs, refetchProjectStats]);
 
-  // TO-DO fix search
-  const handleSearchChange = (searchValue: string) => {
-    console.log("handleSearchChange called with searchValue:", searchValue);
+  // change search term in "search input", changes search, changes debouncedSearch after 500ms, fetches new logs from API
+  // search looks for regex match in log fields: message and source
+  const handleSearchChange = useCallback((searchValue: string) => {
     setSearch(searchValue);
-    setCurrentPage(0);
-  };
+  }, []);
 
-  const handlePaginationChange = (pageIndex: number, pageSize: number) => {
-    console.log(pageIndex, "pageIndex", pageSize);
-    setCurrentPage(pageIndex);
-  };
+  const handlePaginationChange = useCallback(
+    (pageIndex: number, pageSize: number) => {
+      setCurrentPage(pageIndex);
+    },
+    []
+  );
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setCurrentPage(0);
+    }, 500); // 500ms delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
   if (isProjectError) {
     return (
@@ -97,6 +142,7 @@ const ProjectDetailPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
+      {/* Project Info */}
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
@@ -123,6 +169,7 @@ const ProjectDetailPage = () => {
         </Button>
       </div>
 
+      {/* Project Detailes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Project Details Card */}
         <div className="space-y-6">
@@ -177,6 +224,75 @@ const ProjectDetailPage = () => {
         </div>
       </div>
 
+      {/* Stats Section */}
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold">Statistics</h2>
+        {isLoadingProjectStats ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton className="h-[120px]" />
+            <Skeleton className="h-[120px]" />
+            <Skeleton className="h-[120px]" />
+          </div>
+        ) : isProjectStatsError ? (
+          <div className="rounded-md border p-4 bg-destructive/10 text-destructive">
+            <p>Error loading statistics</p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-2"
+              onClick={() => refetchProjectStats()}
+            >
+              Retry
+            </Button>
+          </div>
+        ) : stats ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <StatsCard
+              title="Last 24 Hours"
+              value={stats.last24Hours}
+              icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+            />
+            <StatsCard
+              title="Last Hour"
+              value={stats.lastHour}
+              icon={<Activity className="h-4 w-4 text-muted-foreground" />}
+            />
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  By Severity
+                </CardTitle>
+                <AlertCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                {Object.entries(stats.bySeverity).length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(stats.bySeverity).map(
+                      ([severity, count]) => (
+                        <div key={severity} className="flex items-center gap-1">
+                          <SeverityBadge severity={severity} />
+                          <span className="text-sm font-medium">
+                            {count as number}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No severity data
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No statistics available
+          </p>
+        )}
+      </div>
+
       {/* Logs Data Table Section */}
       <div className="py-10">
         <h2 className="text-2xl font-semibold mb-4">Logs</h2>
@@ -192,24 +308,38 @@ const ProjectDetailPage = () => {
               Retry
             </Button>
           </div>
-        ) : isLoadingLogs ? (
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={logs}
-            pageSize={pageSize}
-            currentPage={currentPage}
-            pageCount={pagination.totalPages}
-            total={pagination.total}
-            onPaginationChange={handlePaginationChange}
-            onSearchChange={handleSearchChange}
-            searchColumn="message"
-          />
+          <div className="space-y-4" style={{ minHeight: "500px" }}>
+            {/* Search input */}
+            <div className="flex justify-between mb-4">
+              <Input
+                placeholder="Filter..."
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="max-w-md w-full"
+              />
+              <ExportLogsButton
+                projectId={project._id}
+                totalRows={pagination.total}
+              />
+            </div>
+
+            {/* Table content with consistent height */}
+            <div className="overflow-hidden" style={{ minHeight: "400px" }}>
+              <DataTable
+                columns={columns}
+                data={logs}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                pageCount={pagination.totalPages}
+                total={pagination.total}
+                onPaginationChange={handlePaginationChange}
+                availableSeverities={availableSeverities}
+                selectedSeverity={selectedSeverity}
+                onSeverityChange={setSelectedSeverity}
+              />
+            </div>
+          </div>
         )}
       </div>
 
