@@ -1,10 +1,7 @@
+import HeroSection from "./_components/hero-section";
+
 const MainPage = () => {
-  return (
-    <>
-      <div>MainPage</div>
-      <a href="/dashboard">Go to Dashboard</a>
-    </>
-  );
+  return <HeroSection />;
 };
 
 export default MainPage;

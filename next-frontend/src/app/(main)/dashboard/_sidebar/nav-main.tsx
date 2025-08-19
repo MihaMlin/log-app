@@ -35,7 +35,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel>General</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           // If there are no sub-items, render a simple menu item

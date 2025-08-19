@@ -1,5 +1,7 @@
+import ComingSoonPage from "@/components/coming-soon";
+
 const ManageUsersPage = () => {
-  return <div>ManageUsersPage</div>;
+  return <ComingSoonPage />;
 };
 
 export default ManageUsersPage;

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { FolderOpenDot, Logs, Map, Users } from "lucide-react";
+import { FolderOpenDot, House, Logs, Map, Users } from "lucide-react";
 
 import { NavMain } from "@/app/(main)/dashboard/_sidebar/nav-main";
 import { NavAdmin } from "@/app/(main)/dashboard/_sidebar/nav-admin";
@@ -19,6 +19,12 @@ import { useAuthContext } from "@/context/auth-provider";
 const data = {
   navMain: [
     {
+      title: "Home",
+      url: "/dashboard",
+      icon: House,
+      items: [],
+    },
+    {
       title: "MyProjects",
       url: "/dashboard/projects",
       icon: FolderOpenDot,
@@ -27,28 +33,15 @@ const data = {
     },
     {
       title: "MyLogs",
-      url: "#",
+      url: "/dashboard/logs",
       icon: Logs,
-      items: [
-        {
-          title: "1h",
-          url: "#",
-        },
-        {
-          title: "24h",
-          url: "#",
-        },
-        {
-          title: "Severity",
-          url: "#",
-        },
-      ],
+      items: [],
     },
   ],
   actions: [
     {
       name: "All Projects",
-      url: "#",
+      url: "/dashboard/all-projects",
       icon: Map,
     },
     {

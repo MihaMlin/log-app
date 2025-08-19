@@ -12,9 +12,11 @@ export function NavHeader() {
       <SidebarMenuItem>
         <SidebarMenuButton asChild>
           <Link href="/dashboard">
-            <div className="flex gap-2 items-center px-4 h-12">
-              <SquareTerminal />
-              <span className="text-lg font-semibold">Dashboard</span>
+            <div className="h-12 flex items-center gap-3">
+              <div className="h-6 w-6 bg-cyan-200 rounded-full animate-pulse" />
+              <span className="text-xl font-semibold text-gray-800 dark:text-white tracking-tight">
+                LOGAPP
+              </span>
             </div>
           </Link>
         </SidebarMenuButton>

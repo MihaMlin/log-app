@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const protectedRoutes = ["/dashboard", "/dashboard/:path*"];
 const publicRoutes = [
-  "/",
+  // "/",
   "/sign-in",
   "/password/set",
   "/password/set/:path*",
