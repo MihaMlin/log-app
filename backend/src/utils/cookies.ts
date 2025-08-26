@@ -5,7 +5,7 @@ import { Env } from "../config/env.config";
 export const REFRESH_PATH = "/auth/refresh";
 
 const defaults: CookieOptions = {
-  sameSite: "strict",
+  sameSite: "none",
   httpOnly: true,
   secure: Env.NODE_ENV !== "develepment",
 };
