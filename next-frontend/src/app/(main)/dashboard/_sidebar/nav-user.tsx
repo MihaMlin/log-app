@@ -31,7 +31,6 @@ import { logoutMutationFn } from "@/lib/api/auth.api";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { AUTH_QUERY_KEY } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 
@@ -57,11 +56,11 @@ export function NavUser({ user }: NavUserProps) {
   const handleLogout = async () => {
     try {
       await logoutMutationFn();
-      queryClient.invalidateQueries({ queryKey: [AUTH_QUERY_KEY] });
+      queryClient.clear(); // delete cache
       toast.success("Logout Success", {
         description: "You have been logged out successfully",
       });
-      router.push("/sign-in");
+      router.push("/");
     } catch (error) {
       toast.error("Logout Failed", {
         description: "An error occurred while logging out",
