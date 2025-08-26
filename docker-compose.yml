@@ -1,0 +1,53 @@
+name: log-app
+
+services:
+  mongo:
+    image: mongo:7.0
+    ports:
+      - 27017:27017 # for MongoDB Compass (development)
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - mern-app
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - mern-app
+    ports:
+      - 4004:4004
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./next-frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ./next-frontend/.env
+    volumes:
+      - ./next-frontend:/app
+      - /app/node_modules
+    networks:
+      - mern-app
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+
+volumes:
+  mongo_data:
+
+networks:
+  mern-app:
+    driver: bridge
