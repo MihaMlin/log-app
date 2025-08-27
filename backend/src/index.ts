@@ -34,6 +34,7 @@ app.get("/health", (req, res) => {
   return res.status(HTTPSTATUS.OK).json({
     success: true,
     status: "healthy",
+    environment: Env.NODE_ENV,
   });
 });
 
