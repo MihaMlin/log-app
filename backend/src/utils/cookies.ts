@@ -5,11 +5,11 @@ import { Env } from "../config/env.config";
 export const REFRESH_PATH = "/auth/refresh";
 
 const defaults: CookieOptions = {
-  sameSite: Env.NODE_ENV === "production" ? "none" : "lax",
+  sameSite: Env.NODE_ENV === "development" ? "none" : "lax",
   httpOnly: true,
-  secure: Env.NODE_ENV === "production",
+  secure: Env.NODE_ENV === "development",
   domain:
-    Env.NODE_ENV === "production" ? "log-app-zgj4.onrender.com" : undefined,
+    Env.NODE_ENV === "development" ? "log-app-zgj4.onrender.com" : undefined,
 };
 
 export const getAccessTokenCookieOptions = (): CookieOptions => ({
