@@ -5,9 +5,11 @@ import { Env } from "../config/env.config";
 export const REFRESH_PATH = "/auth/refresh";
 
 const defaults: CookieOptions = {
-  sameSite: "none",
+  sameSite: Env.NODE_ENV === "production" ? "none" : "lax",
   httpOnly: true,
-  secure: Env.NODE_ENV !== "develepment",
+  secure: Env.NODE_ENV === "production",
+  domain:
+    Env.NODE_ENV === "production" ? "log-app-zgj4.onrender.com" : undefined,
 };
 
 export const getAccessTokenCookieOptions = (): CookieOptions => ({
@@ -33,5 +35,5 @@ export const setAuthCookies = ({ res, accessToken, refreshToken }: Params) =>
 
 export const clearAuthCookies = (res: Response) =>
   res
-    .clearCookie("accessToken")
-    .clearCookie("refreshToken", { path: REFRESH_PATH });
+    .clearCookie("accessToken", { ...defaults, path: "/" })
+    .clearCookie("refreshToken", { ...defaults, path: REFRESH_PATH });
